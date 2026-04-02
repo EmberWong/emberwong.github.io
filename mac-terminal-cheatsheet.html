@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mac 终端急救手册</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f5f0;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --border: #e2ddd6;
+    --border-hover: #c8c2b8;
+    --text: #1a1814;
+    --text-muted: #7a7368;
+    --text-faint: #b0a99e;
+    --accent: #2d6a4f;
+    --accent-light: #e8f5ee;
+    --accent-border: #74c69d;
+    --warn: #92400e;
+    --warn-bg: #fef3c7;
+    --warn-border: #f59e0b;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Noto Sans SC', sans-serif;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141210;
+      --surface: #1e1c18;
+      --surface2: #262420;
+      --border: #302e28;
+      --border-hover: #48453d;
+      --text: #e8e4dc;
+      --text-muted: #8a847a;
+      --text-faint: #504c46;
+      --accent: #74c69d;
+      --accent-light: #0f2a1c;
+      --accent-border: #2d6a4f;
+      --warn: #fcd34d;
+      --warn-bg: #1c1500;
+      --warn-border: #92400e;
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 4rem;
+  }
+
+  .hero {
+    padding: 3rem 1.5rem 2.5rem;
+    max-width: 680px;
+    margin: 0 auto;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 2rem;
+  }
+
+  .hero-label {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .hero h1 {
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+
+  .hero p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .section {
+    margin-bottom: 2.5rem;
+    animation: fadeIn 0.4s ease both;
+  }
+
+  .section:nth-child(1) { animation-delay: 0.05s; }
+  .section:nth-child(2) { animation-delay: 0.08s; }
+  .section:nth-child(3) { animation-delay: 0.11s; }
+  .section:nth-child(4) { animation-delay: 0.14s; }
+  .section:nth-child(5) { animation-delay: 0.17s; }
+  .section:nth-child(6) { animation-delay: 0.20s; }
+  .section:nth-child(7) { animation-delay: 0.23s; }
+  .section:nth-child(8) { animation-delay: 0.26s; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .section-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    background: var(--surface2);
+    border: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.03em;
+  }
+
+  .warn-box {
+    background: var(--warn-bg);
+    border: 0.5px solid var(--warn-border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    margin-bottom: 12px;
+  }
+
+  .warn-box p {
+    font-size: 12px;
+    color: var(--warn);
+    line-height: 1.7;
+  }
+
+  .cmd-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .cmd-card:hover { border-color: var(--border-hover); }
+
+  .cmd-card.copied {
+    border-color: var(--accent-border);
+    background: var(--accent-light);
+  }
+
+  .cmd-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+
+  .cmd-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  .copy-tag {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--text-faint);
+    white-space: nowrap;
+    padding-top: 2px;
+    flex-shrink: 0;
+    transition: color 0.15s;
+  }
+
+  .cmd-card.copied .copy-tag { color: var(--accent); }
+
+  .cmd-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  .cmd-desc strong { color: var(--text); font-weight: 500; }
+
+  .cmd-code {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--surface2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 7px 11px;
+    color: var(--text);
+    word-break: break-all;
+    line-height: 1.5;
+    transition: background 0.15s;
+  }
+
+  .cmd-card.copied .cmd-code { background: transparent; }
+
+  .tip-box {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-left: 2px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-top: 2.5rem;
+  }
+
+  .tip-box p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.8;
+  }
+
+  .tip-box strong { color: var(--text); font-weight: 500; }
+
+  .tip-box code {
+    font-family: var(--mono);
+    font-size: 11px;
+    background: var(--surface2);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--accent);
+  }
+
+  .footer {
+    text-align: center;
+    padding-top: 3rem;
+    font-size: 12px;
+    color: var(--text-faint);
+    font-family: var(--mono);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 480px) {
+    .hero h1 { font-size: 22px; }
+    .cmd-label { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-label">// mac terminal</div>
+  <h1>终端急救手册</h1>
+  <p>面向非技术用户的 Mac 终端命令速查。点击卡片复制命令，打开终端粘贴执行即可。</p>
+</div>
+
+<div class="container">
+
+  <!-- 程序卡死强制关闭 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🧊</div>
+      <div class="section-title">程序卡死 / 强制关闭</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'killall 应用名称')">
+      <div class="cmd-top">
+        <div class="cmd-label">强制关闭某个应用</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">应用完全没反应、转圈圈转不停时用。把「应用名称」换成实际名字，比如 Safari、WeChat、Finder。</div>
+      <div class="cmd-code">killall 应用名称</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'ps aux | grep 应用名称')">
+      <div class="cmd-top">
+        <div class="cmd-label">查找某个应用的进程编号</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">killall 没反应时用，先查出进程编号（PID），结果第二列的数字就是。</div>
+      <div class="cmd-code">ps aux | grep 应用名称</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'kill -9 进程编号')">
+      <div class="cmd-top">
+        <div class="cmd-label">用进程编号强制终止</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">把上面查到的 PID 数字填进来，这是最强力的关闭方式，几乎没有应用能扛住。</div>
+      <div class="cmd-code">kill -9 进程编号</div>
+    </div>
+  </div>
+
+  <!-- 蓝牙外设连不上 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">📶</div>
+      <div class="section-title">蓝牙 / 外设连不上</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'sudo pkill bluetoothd')">
+      <div class="cmd-top">
+        <div class="cmd-label">重启蓝牙服务</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">蓝牙耳机、鼠标、键盘连不上，或者连上没声音时用。执行后蓝牙会自动重启，稍等几秒再重新配对。需要输入密码。</div>
+      <div class="cmd-code">sudo pkill bluetoothd</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'rm -rf ~/Library/Preferences/com.apple.Bluetooth.plist')">
+      <div class="cmd-top">
+        <div class="cmd-label">清除蓝牙配对记录</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">蓝牙设备怎么都连不上、反复断连时用。执行后重启 Mac，所有蓝牙设备需要重新配对。</div>
+      <div class="cmd-code">rm -rf ~/Library/Preferences/com.apple.Bluetooth.plist</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'system_profiler SPUSBDataType')">
+      <div class="cmd-top">
+        <div class="cmd-label">查看 USB 设备是否被识别</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">插了 USB 设备但没反应时用，列出所有已识别的 USB 设备，看看你的设备在不在里面。</div>
+      <div class="cmd-code">system_profiler SPUSBDataType</div>
+    </div>
+  </div>
+
+  <!-- 查找大文件 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🔍</div>
+      <div class="section-title">查找大文件 / 清理空间</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'find ~ -size +500M -type f 2>/dev/null')">
+      <div class="cmd-top">
+        <div class="cmd-label">找出超过 500MB 的大文件</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">扫描整个用户目录，列出所有超过 500MB 的文件。把 500M 改成 1G 可以只找 1GB 以上的。需要等一会儿。</div>
+      <div class="cmd-code">find ~ -size +500M -type f 2>/dev/null</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'du -sh ~/* | sort -rh | head -20')">
+      <div class="cmd-top">
+        <div class="cmd-label">列出主文件夹里最占空间的 20 项</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">按大小排列主文件夹里的内容，快速定位哪个文件夹最占地方。</div>
+      <div class="cmd-code">du -sh ~/* | sort -rh | head -20</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'find ~ -name \'.DS_Store\' -delete 2>/dev/null')">
+      <div class="cmd-top">
+        <div class="cmd-label">删除所有 .DS_Store 隐藏文件</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">.DS_Store 是 Mac 自动生成的隐藏文件，单个很小但数量庞大。传文件给别人前清一次比较整洁。</div>
+      <div class="cmd-code">find ~ -name '.DS_Store' -delete 2>/dev/null</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'brew cleanup 2>/dev/null || echo \"Homebrew 未安装\"')">
+      <div class="cmd-top">
+        <div class="cmd-label">清理 Homebrew 旧版本缓存</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">如果你装过 Homebrew，旧版本文件会默默占用大量空间。这条命令统一清理掉。没装 Homebrew 的话会提示未安装。</div>
+      <div class="cmd-code">brew cleanup 2>/dev/null || echo "Homebrew 未安装"</div>
+    </div>
+  </div>
+
+  <!-- 应用安装不了 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🔒</div>
+      <div class="section-title">应用安装不了 / 打不开</div>
+    </div>
+
+    <div class="warn-box">
+      <p>⚠️ 以下命令会绕过 macOS 安全限制，仅对你信任来源的应用使用。从不明渠道下载的软件请勿轻易操作。</p>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'xattr -cr /Applications/应用名称.app')">
+      <div class="cmd-top">
+        <div class="cmd-label">解除「已损坏，无法打开」</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">提示「应用已损坏」或「无法验证开发者身份」时用。把「应用名称」替换成实际名字，执行后重新双击打开即可。</div>
+      <div class="cmd-code">xattr -cr /Applications/应用名称.app</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'sudo spctl --master-disable')">
+      <div class="cmd-top">
+        <div class="cmd-label">允许安装任意来源的应用</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">执行后在「系统设置 → 隐私与安全性」里会出现「任何来源」选项。需要输入密码。<strong>装完应用后建议马上用下面那条命令恢复默认。</strong></div>
+      <div class="cmd-code">sudo spctl --master-disable</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'sudo spctl --master-enable')">
+      <div class="cmd-top">
+        <div class="cmd-label">恢复默认安全设置</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">装完应用后执行这条，把安全策略恢复回来。平时保持开启更安全。</div>
+      <div class="cmd-code">sudo spctl --master-enable</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'open /Applications/应用名称.app')">
+      <div class="cmd-top">
+        <div class="cmd-label">用终端强制打开应用</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">双击打不开时可以试试用终端启动，有时能绕过拦截弹窗。把「应用名称」换成实际名字。</div>
+      <div class="cmd-code">open /Applications/应用名称.app</div>
+    </div>
+  </div>
+
+  <!-- 文件删不掉 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🗑</div>
+      <div class="section-title">文件 / 应用删不掉</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'pkill -x 应用名称')">
+      <div class="cmd-top">
+        <div class="cmd-label">强制退出某个应用进程</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">拖进废纸篓提示「正在使用中」时用。把「应用名称」换成实际名字，比如 Raycast、Finder。</div>
+      <div class="cmd-code">pkill -x 应用名称</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'sudo rm -rf /Applications/应用名称.app')">
+      <div class="cmd-top">
+        <div class="cmd-label">强制删除应用（需要密码）</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">pkill 之后还删不掉时用。执行后会提示输入 Mac 登录密码。</div>
+      <div class="cmd-code">sudo rm -rf /Applications/应用名称.app</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'sudo rm -rf ~/Downloads/文件名')">
+      <div class="cmd-top">
+        <div class="cmd-label">强制删除某个文件</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">普通文件删不掉时用。把路径换成实际文件位置，~/Downloads 是下载文件夹。</div>
+      <div class="cmd-code">sudo rm -rf ~/Downloads/文件名</div>
+    </div>
+  </div>
+
+  <!-- 磁盘空间 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">💾</div>
+      <div class="section-title">磁盘 / 空间不够</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'df -h')">
+      <div class="cmd-top">
+        <div class="cmd-label">查看磁盘剩余空间</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">看看哪个分区快满了。Size 是总容量，Avail 是剩余空间。</div>
+      <div class="cmd-code">df -h</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'du -sh ~/Downloads/*')">
+      <div class="cmd-top">
+        <div class="cmd-label">查看下载文件夹各文件大小</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">快速找出占空间最大的文件。可以把 Downloads 换成其他文件夹路径。</div>
+      <div class="cmd-code">du -sh ~/Downloads/*</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'rm -rf ~/Library/Caches/*')">
+      <div class="cmd-top">
+        <div class="cmd-label">清空系统缓存</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">可以释放几百 MB 到几 GB，安全，清完缓存会自动重建。</div>
+      <div class="cmd-code">rm -rf ~/Library/Caches/*</div>
+    </div>
+  </div>
+
+  <!-- 网络 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">📡</div>
+      <div class="section-title">网络 / 连接有问题</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'ping -c 4 baidu.com')">
+      <div class="cmd-top">
+        <div class="cmd-label">测试网络是否通畅</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">发 4 个数据包，测试网络延迟和丢包率。有 time= 数值说明网络通。</div>
+      <div class="cmd-code">ping -c 4 baidu.com</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder')">
+      <div class="cmd-top">
+        <div class="cmd-label">刷新 DNS 缓存</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">网页打不开但网络正常时试试，相当于给 Mac 做一次 DNS 记忆清除。</div>
+      <div class="cmd-code">sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder</div>
+    </div>
+  </div>
+
+  <!-- 系统变慢 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">⚡</div>
+      <div class="section-title">系统 / 运行变慢</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'top -o cpu')">
+      <div class="cmd-top">
+        <div class="cmd-label">查看哪个程序最占 CPU</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">按 CPU 使用率排列进程，风扇狂转时很好用。按 q 退出。</div>
+      <div class="cmd-code">top -o cpu</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'sudo purge')">
+      <div class="cmd-top">
+        <div class="cmd-label">释放内存缓存</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">内存占用很高但不想重启时用。需要输入 Mac 登录密码。</div>
+      <div class="cmd-code">sudo purge</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'killall -KILL SystemUIServer')">
+      <div class="cmd-top">
+        <div class="cmd-label">重启菜单栏</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">菜单栏图标不显示、状态栏卡住时用。界面会闪一下然后自动恢复正常。</div>
+      <div class="cmd-code">killall -KILL SystemUIServer</div>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <p>
+      <strong>怎么用：</strong>用 Spotlight（⌘ + 空格）搜索「Terminal」打开终端，点击上方卡片复制命令，粘贴进终端按回车执行。<br><br>
+      带 <code>sudo</code> 的命令需要输入 Mac 登录密码，输入时屏幕不显示字符，这是正常的，输完直接回车即可。
+    </p>
+  </div>
+
+  <div class="footer">made with Claude · emberwong.github.io</div>
+
+</div>
+
+<script>
+function copy(el, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    el.classList.add('copied');
+    el.querySelector('.copy-tag').textContent = '✓ 已复制';
+    setTimeout(() => {
+      el.classList.remove('copied');
+      el.querySelector('.copy-tag').textContent = '点击复制';
+    }, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    el.classList.add('copied');
+    el.querySelector('.copy-tag').textContent = '✓ 已复制';
+    setTimeout(() => {
+      el.classList.remove('copied');
+      el.querySelector('.copy-tag').textContent = '点击复制';
+    }, 2000);
+  });
+}
+</script>
+
+</body>
+</html>
