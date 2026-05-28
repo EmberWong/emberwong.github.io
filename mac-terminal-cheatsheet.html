@@ -107,6 +107,7 @@
   .section:nth-child(6) { animation-delay: 0.20s; }
   .section:nth-child(7) { animation-delay: 0.23s; }
   .section:nth-child(8) { animation-delay: 0.26s; }
+  .section:nth-child(9) { animation-delay: 0.29s; }
 
   .section-header {
     display: flex;
@@ -563,6 +564,73 @@
       <div class="cmd-desc">菜单栏图标不显示、状态栏卡住时用。界面会闪一下然后自动恢复正常。</div>
       <div class="cmd-code">killall -KILL SystemUIServer</div>
     </div>
+  </div>
+
+  <!-- iCloud 文件迁移 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">☁️</div>
+      <div class="section-title">iCloud 文件迁移到本地</div>
+    </div>
+
+    <div class="warn-box">
+      <p>⚠️ 以下命令用于把 iCloud 云端文件夹完整迁移到本地。操作前请确认网络正常、磁盘空间足够。<strong>迁移完成并确认无误后再删除 iCloud 原文件。</strong></p>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'ls ~/Library/Mobile\\ Documents/iCloud\\~md\\~obsidian/Documents/')">
+      <div class="cmd-top">
+        <div class="cmd-label">查看 iCloud 里有哪些 Obsidian 仓库</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">列出 iCloud 上所有 Obsidian 仓库名称，确认要迁移的文件夹名字拼写正确。</div>
+      <div class="cmd-code">ls ~/Library/Mobile\ Documents/iCloud\~md\~obsidian/Documents/</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'brctl download ~/Library/Mobile\\ Documents/iCloud\\~md\\~obsidian/Documents/仓库名')">
+      <div class="cmd-top">
+        <div class="cmd-label">强制下载 iCloud 文件到本地</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">把「仓库名」换成实际名字。执行后没有输出是正常的，去 Finder 里确认文件的 ☁️ 图标消失再继续。如果部分文件没有消失，在 Finder 里手动右键单个文件选「下载」。</div>
+      <div class="cmd-code">brctl download ~/Library/Mobile\ Documents/iCloud\~md\~obsidian/Documents/仓库名</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'mkdir ~/LocalVaults')">
+      <div class="cmd-top">
+        <div class="cmd-label">新建本地存放目录</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">在用户根目录下创建 LocalVaults 文件夹作为本地仓库存放位置，完全脱离 iCloud 管理。只需执行一次。</div>
+      <div class="cmd-code">mkdir ~/LocalVaults</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'rsync -av ~/Library/Mobile\\ Documents/iCloud\\~md\\~obsidian/Documents/仓库名*/ ~/LocalVaults/仓库名/')">
+      <div class="cmd-top">
+        <div class="cmd-label">用 rsync 复制仓库到本地</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">把两处「仓库名」换成实际名字。比 mv 更稳定，会逐文件复制并显示进度。如果中途卡住超过 10 分钟，按 Ctrl+C 停止，去 Finder 手动下载卡住的文件后再重跑一次。</div>
+      <div class="cmd-code">rsync -av ~/Library/Mobile\ Documents/iCloud\~md\~obsidian/Documents/仓库名*/ ~/LocalVaults/仓库名/</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'rsync -av --ignore-existing ~/Library/Mobile\\ Documents/iCloud\\~md\\~obsidian/Documents/仓库名*/ ~/LocalVaults/仓库名/')">
+      <div class="cmd-top">
+        <div class="cmd-label">续传：跳过已复制的文件继续</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">rsync 中断后用这条重跑，加了 --ignore-existing 会跳过已传完的文件，只补传缺失部分，速度快很多。</div>
+      <div class="cmd-code">rsync -av --ignore-existing ~/Library/Mobile\ Documents/iCloud\~md\~obsidian/Documents/仓库名*/ ~/LocalVaults/仓库名/</div>
+    </div>
+
+    <div class="cmd-card" onclick="copy(this, 'rm -rf ~/Library/Mobile\\ Documents/iCloud\\~md\\~obsidian/Documents/仓库名*')">
+      <div class="cmd-top">
+        <div class="cmd-label">确认迁移完成后删除 iCloud 原文件</div>
+        <div class="copy-tag">点击复制</div>
+      </div>
+      <div class="cmd-desc">⚠️ 先在 Obsidian 里打开本地新仓库确认一切正常，再执行这条删除命令。把「仓库名」换成实际名字。</div>
+      <div class="cmd-code">rm -rf ~/Library/Mobile\ Documents/iCloud\~md\~obsidian/Documents/仓库名*</div>
+    </div>
+
   </div>
 
   <div class="tip-box">
